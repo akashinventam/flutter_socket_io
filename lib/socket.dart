@@ -145,7 +145,7 @@ class SocketIO {
   ///send data to socket server, return expected Ack as a Future
   Future emitWithAck(String eventName, List<dynamic> arguments) async {
     String reqId = (++_reqCounter).toString();
-    await _channel.invokeMethod('emit',
+    await _channel.invokeMethod('emitWithAck',
         {'eventName': eventName, 'arguments': arguments, 'reqId': reqId});
     var completer = new Completer();
     _pendingAcks[reqId] = completer;
