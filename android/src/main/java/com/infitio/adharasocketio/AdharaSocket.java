@@ -189,6 +189,7 @@ class AdharaSocket implements MethodCallHandler {
         Options(int index, String uri, String namespace){
             this.index = index;
             this.uri = uri;
+            this.namespace = namespace;
         }
 
     }
