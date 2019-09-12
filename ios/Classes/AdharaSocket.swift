@@ -84,17 +84,19 @@ public class AdharaSocket: NSObject, FlutterPlugin {
             case "emit":
                 let eventName: String = arguments["eventName"] as! String
                 let data: [Any] = arguments["arguments"] as! [Any]
+                let reqId: String? = arguments["reqId"] as? String
                 self.log("emitting:::", data, ":::to:::", eventName);
-                socket.emit(eventName, with: data)
+                if (reqId == nil) {
+                    socket.emit(eventName, with: data)
+                } else {
+                    socket.emitWithAck(eventName, with: data).timingOut(after: 0) { data in
+                        self.channel.invokeMethod("incomingAck", arguments: [
+                            "args": data,
+                            "reqId": reqId
+                            ]);
+                    }
+                }
                 result(nil)
-            case "emitWithAck":
-                let eventName: String = arguments["eventName"] as! String
-                let data: [Any] = arguments["arguments"] as! [Any]
-                self.log("emitting:::", data, ":::to:::", eventName);
-                
-                socket.emitWithAck(eventName, with: data).timingOut(after: 0, callback: { data in
-                    result (data)
-                })
             case "isConnected":
                 self.log("connected")
                 result(socket.status == .connected)
