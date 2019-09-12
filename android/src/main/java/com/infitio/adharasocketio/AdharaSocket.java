@@ -182,12 +182,6 @@ class AdharaSocket implements MethodCallHandler {
                 result.success(socket.connected());
                 break;
             }
-            case "disconnect": {
-                log("disconnected:::");
-                socket.disconnect();
-                result.success(null);
-                break;
-            }
             default: {
                 result.notImplemented();
             }
