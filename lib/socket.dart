@@ -143,14 +143,15 @@ class SocketIO {
   }
 
   ///send data to socket server, return expected Ack as a Future
-  Future emitWithAck(String eventName, List<dynamic> arguments) async {
-    String reqId = (++_reqCounter).toString();
-    await _channel.invokeMethod('emitWithAck',
-        {'eventName': eventName, 'arguments': arguments, 'reqId': reqId});
-    var completer = new Completer();
-    _pendingAcks[reqId] = completer;
-    return completer.future;
+  Future<dynamic> emitWithAck(String eventName, {List<dynamic> arguments}) async {
+    final result = await _channel.invokeMethod('emitWithAck', {
+      'eventName': eventName,
+      'arguments': arguments,
+    });
+
+    return result;
   }
+
 
   ///Data listener called by platform API
   _handleData(String eventName, List arguments) {
