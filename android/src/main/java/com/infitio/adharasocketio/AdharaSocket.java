@@ -158,14 +158,10 @@ class AdharaSocket implements MethodCallHandler {
                         }
                     }
                 }
-                socket.emit(eventName, array, new Ack() {
+                socket.emit(eventName, array, args -> {
+                    log("emitUserConnectedEvent: ack" + Arrays.toString(args));
+                    result.success(Arrays.toString(args));
 
-                    @Override
-                    public void call(Object... args) {
-                        log("Ack received:::" + eventName);
-                        log("emitUserConnectedEvent: ack" + Arrays.toString(args));
-                        result.success(Arrays.toString(args));
-                    }
                 });
 
                 break;
