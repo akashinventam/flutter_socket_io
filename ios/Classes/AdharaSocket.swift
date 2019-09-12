@@ -55,6 +55,10 @@ public class AdharaSocket: NSObject, FlutterPlugin {
             case "connect":
                 socket.connect()
                 result(nil)
+            case "disconnect":
+                self.log("dis-connected")
+                socket.disconnect()
+                result(nil)
             case "on":
                 let eventName: String = arguments["eventName"] as! String
                 self.log("registering event:::", eventName)
@@ -71,6 +75,12 @@ public class AdharaSocket: NSObject, FlutterPlugin {
                 self.log("un-registering event:::", eventName)
                 socket.off(eventName);
                 result(nil)
+            case "getId":
+                if self.socket != nil {
+                     result(self.socket.sid)
+                } else {
+                    result("")
+                }
             case "emit":
                 let eventName: String = arguments["eventName"] as! String
                 let data: [Any] = arguments["arguments"] as! [Any]

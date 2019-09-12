@@ -61,6 +61,19 @@ class AdharaSocket implements MethodCallHandler {
                 result.success(null);
                 break;
             }
+            case "disconnect": {
+                log("disconnected:::");
+                socket.disconnect();
+                result.success(null);
+                break;
+            }
+            case "getId": {
+                if (this.socket != null) {
+                    result.success(this.socket.id());
+                } else {
+                    result.success("");
+                }
+            }
             case "on": {
                 final String eventName = call.argument("eventName");
                 log("registering::"+eventName);

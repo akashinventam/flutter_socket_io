@@ -101,6 +101,17 @@ class SocketIO {
     await _channel.invokeMethod("connect");
   }
 
+  ///disconnect this socket to server
+  disconnect() async {
+    await _channel.invokeMethod("disconnect");
+  }
+
+  ///connect this socket to server
+  Future<String> getSocketId() async {
+    String socetId = await _channel.invokeMethod("getId");
+    return socetId;
+  }
+
   ///listen to an event
   on(String eventName, SocketEventListener listener) async {
     if (_listeners[eventName] == null) {
