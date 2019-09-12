@@ -42,8 +42,9 @@ class AdharaSocket implements MethodCallHandler {
     private AdharaSocket(MethodChannel channel, Options options) throws URISyntaxException {
         this.channel = channel;
         this.options = options;
-        log("Connecting to... "+options.uri);
-        socket = IO.socket(options.uri, this.options);
+        final String connectiingUrl = options.uri + options.namespace;
+        log("Connecting to... "+connectiingUrl);
+        socket = IO.socket(connectiingUrl, this.options);
     }
 
     static AdharaSocket getInstance(Registrar registrar, Options options) throws URISyntaxException{
@@ -181,10 +182,11 @@ class AdharaSocket implements MethodCallHandler {
     public static class Options extends IO.Options {
 
         String uri;
+        String namespace;
         int index;
         public Boolean enableLogging = false;
 
-        Options(int index, String uri){
+        Options(int index, String uri, String namespace){
             this.index = index;
             this.uri = uri;
         }
