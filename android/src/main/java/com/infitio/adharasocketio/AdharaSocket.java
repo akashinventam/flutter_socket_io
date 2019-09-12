@@ -74,6 +74,7 @@ class AdharaSocket implements MethodCallHandler {
                 } else {
                     result.success("");
                 }
+                break;
             }
             case "on": {
                 final String eventName = call.argument("eventName");
@@ -118,7 +119,6 @@ class AdharaSocket implements MethodCallHandler {
             case "emit": {
                 final String eventName = call.argument("eventName");
                 final List data = call.argument("arguments");
-                final String reqId = call.argument("reqId");
                 log("emitting:::"+data+":::to:::"+eventName);
                 Object[] array = {};
                 if(data!=null){
@@ -133,49 +133,38 @@ class AdharaSocket implements MethodCallHandler {
                             array[i] = new JSONArray((Collection) datum);
                         }else{
                             array[i] = datum;
-                            /*try{
-                                array[i] = new JSONObject(datum.toString());
-                            }catch (JSONException jse){
-                                try{
-                                    array[i] = new JSONArray(datum.toString());
-                                }catch (JSONException jse2){
-                                    array[i] = datum;
-                                }
-                            }*/
                         }
                     }
                 }
-                if (reqId == null) {
-                    socket.emit(eventName, array);
-                } else {
-                    socket.emit(eventName, array, new Ack() {
-
-                        @Override
-                        public void call(Object... args) {
-                            log("Ack received:::"+eventName);
-                            final Map<String, Object> arguments = new HashMap<>();
-                            arguments.put("reqId", reqId);
-                            List<String> argsList = new ArrayList<>();
-                            for(Object arg : args){
-                                if((arg instanceof JSONObject)
-                                        || (arg instanceof JSONArray)){
-                                    argsList.add(arg.toString());
-                                }else if(arg!=null){
-                                    argsList.add(arg.toString());
-                                }
-                            }
-                            arguments.put("args", argsList);
-                            final Handler handler = new Handler(Looper.getMainLooper());
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    channel.invokeMethod("incomingAck", arguments);
-                                }
-                            });
-                        }
-                    });
-                }
+                socket.emit(eventName, array);
                 result.success(null);
+                break;
+            }
+            case "emitWithAck": {
+                final String eventName = call.argument("eventName");
+                final List data = call.argument("arguments");
+                log("emitting:::"+data+":::to:::"+eventName);
+                Object[] array = {};
+                if(data!=null){
+                    array = new Object[data.size()];
+                    for(int i=0; i<data.size(); i++){
+                        Object datum = data.get(i);
+                        System.out.println(datum);
+                        System.out.println(datum.getClass());
+                        if(datum instanceof Map){
+                            array[i] = new JSONObject((Map)datum);
+                        }else if(datum instanceof Collection){
+                            array[i] = new JSONArray((Collection) datum);
+                        }else{
+                            array[i] = datum;
+                        }
+                    }
+                }
+                socket.emit(eventName, array, args -> {
+                    log("emitUserConnectedEvent: ack" + Arrays.toString(args));
+                    result.success(Arrays.toString(args));
+                });
+
                 break;
             }
             case "isConnected": {
